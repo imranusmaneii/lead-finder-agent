@@ -198,6 +198,7 @@ export async function scrapeLeads(
     console.log(`[Scrape] Page title: ${pageTitle}`);
 
     let leads: Lead[] = [];
+    const seen = new Set<string>();
 
     const structuredLeads = await extractLeadsFromStructuredData(page);
     if (structuredLeads.length > 0) {
@@ -272,8 +273,6 @@ export async function scrapeLeads(
         } catch {}
       }
 
-      const seen = new Set<string>();
-
       for (const existing of leads) {
         const key = `${existing.businessName.toLowerCase()}|${existing.phone}|${existing.website}`;
         seen.add(key);
@@ -307,7 +306,7 @@ export async function scrapeLeads(
           if (!businessName) {
             try {
               const text = (await el.textContent()) || "";
-              businessName = text.split("\n").find((l) => l.trim().length > 1) || "";
+              businessName = text.split("\n").find((line: string) => line.trim().length > 1) || "";
             } catch {}
           }
 
